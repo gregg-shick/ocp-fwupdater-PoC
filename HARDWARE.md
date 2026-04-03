@@ -22,13 +22,13 @@
 - Breadboard, jumper wires, connectors, standoffs, ground wiring
 
 ## Hardware Diagram (simple ASCII)
-[Host] -- (optional) -- [SEL control] --+  
-                                         |  
+[Host] -- (optional) -- [SEL control] ---------+  
+&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  
 [Pico2 (SPI master)] --[30Ω series]-- [TMUX1574] -- [SPI‑NOR (25Q256)]  
-   |                                     |  
-   +-- SPI0 (GPIO16..19) -----------> W5500 (SPI)  
-   |-- GPIO20 (W5500 RESET)  
-   |-- GPIO21 (W5500 INT)  
+&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+&nbsp;&nbsp;&nbsp;+-- SPI0 (GPIO16..19) -----------> W5500 (SPI)  
+&nbsp;&nbsp;&nbsp;|-- GPIO20 (W5500 RESET)  
+&nbsp;&nbsp;&nbsp;|-- GPIO21 (W5500 INT)  
 VBUS -> VSYS  
 GND -> common ground
 
