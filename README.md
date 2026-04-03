@@ -1,66 +1,88 @@
-This code is implementing a basic TFTP client through an RP2350 board
-attached to a Wiznet W5500 SPI ethernet adapter
+# RP2350 TFTP Client PoC
 
-Only ipv4 is supported, and no VLAN
+## Overview
 
-The primary goal is to prove that a firmware storage device (like a spi-nor
-which contains BMC code, or ROM ) can be fully validated and updated
-before system startup using low cost micro controllers, Ethernet and industry 
-standard protocols through high level languages like golang without any human intervention.
+This project implements a basic TFTP client on an RP2350 board connected to a Wiznet W5500 SPI Ethernet adapter.
 
-The PoC relies on a microcontroller connected to 
-- 1 SPI to Ethernet adapter (in our example a Wiznet W5500)
-- 1 SPI MUX which will bridge a SPI-NOR between the uC and a target system
+- Only IPv4 is supported — no VLAN support.
+- Goal: demonstrate that firmware stored in a SPI‑NOR (such as BMC code or ROM) can be validated and updated before system startup using low-cost microcontrollers, Ethernet, and industry-standard protocols from a high-level language (Go) without human intervention.
 
-The uC starts and issue a DHCP request, then an ARP request, then a TFTP File Request,
-and will (not yet implemented) compare the TFTP received data with the SPI-NOR content.
-If a missmatch occurs, it will update the SPI-NOR content. When the whole process is done
-the uC enter DeepSleep mode and wait for next reset. It switch the SPI MUX to the control
-of the main system.
+## Hardware Setup
 
-Ultimately, the protocol implemented will be using DHCP, ARP, TFTP to download a secondart
-stage firmware, and reset the uC in SRAM to execute that secondary firmware which
-will retrieve the SPI-NOR content through HTTP request using TCP connection in 
-secure or unsecure mode to update the SPI-NOR.
+This Proof of Concept (PoC) relies on a microcontroller connected to:
 
-We do not want to integrate the TCP stack into the potentially immutable uC ROM, only
-simple protocol shall be used to reduce attack footprint.
+- 1× SPI-to-Ethernet adapter (example: Wiznet W5500)
+- 1× SPI MUX to bridge a SPI‑NOR between the microcontroller and a target system
 
-To run this code:
+Process flow:
 
-It requires a DHCP server which will deliver an IP address through a DHCP request
-Lease time is not taken into account for the moment by the client. It shall be set
-in a way the client has enough time to retrieve the TFTP transfer
+1. The microcontroller boots and issues:
+   - DHCP request
+   - ARP request
+   - TFTP file request
+2. (Not yet implemented) Compare the received TFTP file with the SPI‑NOR content.
+3. On mismatch, update the SPI‑NOR content.
+4. When finished, enter DeepSleep mode and wait for the next reset.
+5. Switch the SPI MUX control to the main system.
 
-A bootfile name shall be provided by the DHCP server
+## Roadmap / Protocol Flow
 
-The client is then issuing TFTP request to the default Gateway (will be changed
-later to a DHCP Option 66/67) 
+- Use DHCP, ARP, and TFTP to download a secondary-stage firmware.
+- Reset the microcontroller and execute the secondary firmware from SRAM.
+- Secondary firmware will retrieve SPI‑NOR content via HTTP (TCP) — secure or unsecure — and update SPI‑NOR as needed.
+- Intention: avoid integrating a TCP stack in immutable uC ROM to reduce attack surface; keep the boot ROM handling only simple protocols.
 
-The transfer happens and the code reports the beginning and end of the transfer
+## Requirements
 
-Sample TFTP server can be downloaded here: https://github.com/vejmarie/golang-tftp-example
-Sample DHCP server can be downloaded here: https://github.com/coredhcp/coredhcp.git
+- DHCP server that assigns an IP address and provides a bootfile name (DHCP lease time is currently ignored by the client; ensure leases are long enough for the TFTP transfer).
+- TFTP server reachable via the default gateway (this will later be changed to use DHCP Option 66/67).
+- The client logs the start and end of the TFTP transfer.
 
-# To build 
+Sample servers:
+- TFTP server example: https://github.com/vejmarie/golang-tftp-example
+- DHCP server example: https://github.com/coredhcp/coredhcp.git
 
-This PoC code requires a tinygo environment
+## Build & Flash
 
-Please use the tasks scheduler for rp2350. The default core scheduler is experiencing a race
-condition which is creating a deadlock when the garbage collector is activated. This can
-be easily triggered by running multiple transfer through that example. The heap is filled up
-to the time memory is exhausted and the Garbage Collector is triggered. Unfortunately the
-multicore implementation has a mutex issue, which is leading the use of a more multicore
-friendly scheduler
+### Environment
 
-For maximum performances please use the -opt=2 option
-The code has also been updated for TFTP transfer block size of 1400 bytes (by default
-TFTP is supporting 512 bytes). Please be sure that your TFTP server can adjust to this
-requirements
+- Requires TinyGo.
+- Use the `tasks` scheduler for RP2350:
+  - The default multicore scheduler has a race condition that can deadlock when the garbage collector runs (observed during multiple transfers). The `tasks` scheduler is more multicore-friendly and avoids this issue.
 
-tinygo flash -monitor -target pico2 -scheduler tasks -opt=2 -stack-size=32KB ./main.go
+### Performance Notes
 
-This code has been partially written using AI tools.
+- Use `-opt=2` for best performance.
+- This PoC uses a TFTP block size of 1400 bytes (default TFTP block size is 512 bytes). Ensure your TFTP server supports this block size.
+- Peak W5500 TFTP throughput is roughly 1.6 MB/s.
 
-You can reach peak performances of a w5500 which is roughly 1.6MB/s through a TFTP transfer.
+### Flash command
 
+```bash
+tinygo flash -monitor -target pico2 \
+  -scheduler tasks \
+  -opt=2 \
+  -stack-size=32KB ./main.go
+```
+
+## Development Notes
+
+- Code is partially written using AI-assisted tools.
+- Primary goal: proof-of-concept for firmware validation and update prior to system boot.
+- Secondary-stage HTTP/TCP update phase will be implemented in SRAM-executed firmware to avoid adding TCP complexity to immutable boot ROM.
+
+## Security Considerations
+
+- Minimize the code and protocols in immutable boot ROM to reduce attack surface.
+- Use simple, well-understood protocols (DHCP, ARP, TFTP) for the initial boot-stage operations.
+- The more complex TCP/HTTP logic will run in secondary firmware loaded into SRAM.
+
+## License
+
+MIT. See LICENSE.md file for details.
+
+## Acknowledgements
+
+- Wiznet W5500 hardware
+- Rapsberry Pi Pico(2) hardware
+- Hewlett Packard Enterprise
