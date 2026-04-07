@@ -27,6 +27,8 @@ Process flow:
 4. When finished, enter DeepSleep mode and wait for the next reset.
 5. Switch the SPI MUX control to the main system.
 
+![Example of a breadboard setup with all hardware components and working condition at 30Mhz SPI](https://github.com/opencomputeproject/ocp-fwupdater-PoC/blob/main/medias/FwStreaming.jpg?raw=true)
+
 ## Roadmap / Protocol Flow
 
 - Use DHCP, ARP, and TFTP to download a secondary-stage firmware.
