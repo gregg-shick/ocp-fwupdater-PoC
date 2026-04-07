@@ -1329,8 +1329,8 @@ func main() {
 									}
 									// this is where I must compute the md5sum
 									time.Sleep(2 * time.Second)
-									logOutput("Net Firmware hash: %s", hex.EncodeToString(hasher.Sum(nil)))
-									logOutput("SPI Firmware hash: %s", hex.EncodeToString(hasherSPI.Sum(nil)))
+									logOutput("Net Fw hash: %s", hex.EncodeToString(hasher.Sum(nil)))
+									logOutput("SPI Fw hash: %s", hex.EncodeToString(hasherSPI.Sum(nil)))
 									logStartStop()
 									log.Fatal("")
 								}
